@@ -5,11 +5,7 @@ import styled from "styled-components";
 import { toDoState } from "./atom";
 import Board from "./Components/Board";
 import CreateBoard from "./Components/CreateBoard";
-
-interface IAreaProps {
-  isDraggingFromThis: boolean;
-  isDraggingOver: boolean;
-}
+import DeleteBoard from "./Components/DeleteBoard";
 
 const Wrapper = styled.div`
   display: grid;
@@ -24,30 +20,11 @@ const Boards = styled.div`
   gap: 20px;
   grid-template-columns: repeat(3, 1fr);
 `;
-const Delete = styled.div<IAreaProps>`
-  margin-top: -50px;
-  margin: 0 auto;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: ${(props) =>
-    props.isDraggingOver
-      ? "red"
-      : props.isDraggingFromThis
-      ? "#b2bec3"
-      : "white"};
-  text-align: center;
-  span {
-    line-height: 90px;
-    font-size: 40px;
-  }
-`;
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = (info: DropResult) => {
     const { destination, draggableId, source } = info;
-    console.log(info);
     if (!destination) return;
     //Delete board Movement
     if (destination?.droppableId === "Delete") {
@@ -112,19 +89,7 @@ function App() {
             <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
           ))}
         </Boards>
-        <Droppable droppableId="Delete">
-          {(magic, info) => (
-            <Delete
-              isDraggingOver={info.isDraggingOver}
-              isDraggingFromThis={Boolean(info.draggingFromThisWith)}
-              ref={magic.innerRef}
-              {...magic.droppableProps}
-            >
-              <span>🗑️</span>
-              {magic.placeholder}
-            </Delete>
-          )}
-        </Droppable>
+        <DeleteBoard />
       </Wrapper>
     </DragDropContext>
   );
